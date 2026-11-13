@@ -3,39 +3,56 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const DriverContext = createContext();
 
-// AI-assisted: see docs/AI_LOG.md #3
 export const DriverProvider = ({ children }) => {
   const [driver, setDriver] = useState({
-    id: 'driver_123',
-    name: 'Juan Sebastián',
-    status: 'Aprobado', // 'Pendiente de aprobación' | 'Aprobado'[cite: 2]
-    isAvailable: false,
+    id: 'drv_01',
+    name: 'Juan Sebastian Carvajal',
+    status: 'Aprobado',
     language: 'es',
   });
+  const [isAvailable, setIsAvailable] = useState(false);
   const [activeTrip, setActiveTrip] = useState(null);
+  const [completedTrips, setCompletedTrips] = useState([]);
 
-  // Cargar preferencias no sensibles desde AsyncStorage
   useEffect(() => {
-    const loadPreferences = async () => {
+    const loadSession = async () => {
       try {
-        const savedLang = await AsyncStorage.getItem('@driver_lang');
-        const savedAvailability = await AsyncStorage.getItem('@driver_availability');
-        if (savedLang) setDriver(prev => ({ ...prev, language: savedLang }));
-        if (savedAvailability) setDriver(prev => ({ ...prev, isAvailable: JSON.parse(savedAvailability) }));
+        const saved = await AsyncStorage.getItem('@driver_session');
+        if (saved) setDriver(JSON.parse(saved));
+        const savedTrips = await AsyncStorage.getItem('@completed_trips');
+        if (savedTrips) setCompletedTrips(JSON.parse(savedTrips));
       } catch (e) {
-        console.error('Error cargando preferencias de AsyncStorage', e);
+        console.error(e);
       }
     };
-    loadPreferences();
+    loadSession();
   }, []);
 
-  const toggleAvailability = async (value) => {
-    setDriver(prev => ({ ...prev, isAvailable: value }));
-    await AsyncStorage.setItem('@driver_availability', JSON.stringify(value));
+  const toggleAvailability = () => setIsAvailable((prev) => !prev);
+
+  const addCompletedTrip = async (trip) => {
+    const updated = [trip, ...completedTrips];
+    setCompletedTrips(updated);
+    try {
+      await AsyncStorage.setItem('@completed_trips', JSON.stringify(updated));
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
-    <DriverContext.Provider value={{ driver, setDriver, isAvailable: driver.isAvailable, toggleAvailability, activeTrip, setActiveTrip }}>
+    <DriverContext.Provider
+      value={{
+        driver,
+        setDriver,
+        isAvailable,
+        toggleAvailability,
+        activeTrip,
+        setActiveTrip,
+        completedTrips,
+        addCompletedTrip,
+      }}
+    >
       {children}
     </DriverContext.Provider>
   );
