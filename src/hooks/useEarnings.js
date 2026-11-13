@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 
-// AI-assisted: see docs/AI_LOG.md #6[cite: 8]
+
 export const useEarnings = (tripsHistory = []) => {
   return useMemo(() => {
     const initialStats = { tripsCount: 0, totalGross: 0, totalCommission: 0, totalTips: 0, netEarnings: 0, averagePerTrip: 0 };

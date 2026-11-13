@@ -1,32 +1,31 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Button, Text, Alert } from 'react-native';
+import { View, StyleSheet, Button, Alert } from 'react-native';
 import PersonalDataTab from './PersonalDataTab';
 import VehicleDataTab from './VehicleDataTab';
 import DocumentsTab from './DocumentsTab';
 
-// AI-assisted: see docs/AI_LOG.md #5
+
 export default function RegisterScreen() {
   const [activeTab, setActiveTab] = useState(1);
   const [formData, setFormData] = useState({
     fullName: '', documentId: '', phone: '', profilePicture: null,
     plate: '', brandModel: '', vehiclePhoto: null,
     mercadoPagoEmail: '', termsAccepted: false,
-    status: 'Pendiente de aprobación' // Estado inicial obligatorio[cite: 2]
+    status: 'Pendiente de aprobación',
   });
   const [errors, setErrors] = useState({});
 
-  // Botón solo habilitado si las 3 pestañas son válidas[cite: 2]
   const isFormValid = () => {
     return (
       formData.fullName && formData.documentId && formData.phone && formData.profilePicture &&
       formData.plate && formData.vehiclePhoto &&
       formData.mercadoPagoEmail && formData.termsAccepted &&
-      Object.values(errors).every(e => e === '')
+      Object.values(errors).every((e) => e === '')
     );
   };
 
   const handleSubmit = () => {
-    Alert.alert("Registro enviado", "Tu cuenta está Pendiente de aprobación[cite: 2].");
+    Alert.alert('Registro enviado', 'Tu cuenta está Pendiente de aprobación.');
   };
 
   return (
@@ -51,5 +50,5 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   tabHeader: { flexDirection: 'row', justifyContent: 'space-around', paddingTop: 40, paddingBottom: 10, backgroundColor: '#f4f4f4' },
-  footer: { padding: 16, borderTopWidth: 1, borderColor: '#eee' }
+  footer: { padding: 16, borderTopWidth: 1, borderColor: '#eee' },
 });

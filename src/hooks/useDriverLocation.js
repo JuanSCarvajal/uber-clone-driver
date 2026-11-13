@@ -1,9 +1,5 @@
 import { useState, useEffect } from 'react';
 
-// AI-assisted: see docs/AI_LOG.md #4[cite: 8]
-/**
- * Hook personalizado para rastreo de ubicación en tiempo real con cleanup.
- */
 export const useDriverLocation = (isAvailable) => {
   const [location, setLocation] = useState({
     latitude: 6.2442,  // Ubicación inicial por defecto

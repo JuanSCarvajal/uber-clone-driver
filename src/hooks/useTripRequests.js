@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 
-// AI-assisted: see docs/AI_LOG.md #5[cite: 8]
+
 export const useTripRequests = (isAvailable) => {
   const [incomingRequest, setIncomingRequest] = useState(null);
   const [timeLeft, setTimeLeft] = useState(15); // Temporizador de 15 segundos[cite: 3]
