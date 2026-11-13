@@ -1,32 +1,44 @@
 import { useState, useEffect } from 'react';
+import * as Location from 'expo-location';
 
 export const useDriverLocation = (isAvailable) => {
   const [location, setLocation] = useState({
-    latitude: 6.2442,  // Ubicación inicial por defecto
+    latitude: 6.2442,
     longitude: -75.5812,
-    heading: 0,
   });
-  const [errorMsg, setErrorMsg] = useState(null);
 
   useEffect(() => {
-    let watchId = null;
+    let subscription = null;
 
-    if (isAvailable) {
-      // Simulación de seguimiento continuo / Geolocation.watchPosition[cite: 3, 7]
-      watchId = setInterval(() => {
-        setLocation(prev => ({
-          latitude: prev.latitude + (Math.random() - 0.5) * 0.001,
-          longitude: prev.longitude + (Math.random() - 0.5) * 0.001,
-          heading: Math.floor(Math.random() * 360),
-        }));
-      }, 4000); // Actualiza cada 4 segundos para no agotar cupos[cite: 3, 7]
-    }
+    const startTracking = async () => {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') return;
 
-    // Función de limpieza obligatoria[cite: 3]
+      const current = await Location.getCurrentPositionAsync({});
+      setLocation({
+        latitude: current.coords.latitude,
+        longitude: current.coords.longitude,
+      });
+
+      if (isAvailable) {
+        subscription = await Location.watchPositionAsync(
+          { accuracy: Location.Accuracy.High, timeInterval: 3000, distanceInterval: 5 },
+          (loc) => {
+            setLocation({
+              latitude: loc.coords.latitude,
+              longitude: loc.coords.longitude,
+            });
+          }
+        );
+      }
+    };
+
+    startTracking();
+
     return () => {
-      if (watchId) clearInterval(watchId);
+      if (subscription) subscription.remove();
     };
   }, [isAvailable]);
 
-  return { location, errorMsg };
+  return { location };
 };
